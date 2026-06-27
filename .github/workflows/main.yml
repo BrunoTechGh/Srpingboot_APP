@@ -35,12 +35,18 @@ jobs:
       - name: Make Maven Wrapper Executable
         run: chmod +x mvnw
 
-     # Step 5: Run the full verification build (Dev Profile)
+      # Step 5: Run the full verification build (Dev Profile)
       - name: Build with Maven (Dev)
+        env:
+          NODE_TLS_REJECT_UNAUTHORIZED: "0" # Forces legacy Node v6 to ignore the SSL certificate error during yarn install
+          PHANTOMJS_CDNURL: "https://npmmirror.com/mirrors/phantomjs/" # Backup mirror if GitHub releases page fails
         run: ./mvnw -B clean verify
 
       # Step 6: Package for Production (Optional but recommended)
       - name: Package Production WAR
+        env:
+          NODE_TLS_REJECT_UNAUTHORIZED: "0" # Forces legacy Node v6 to ignore the SSL certificate error during yarn install
+          PHANTOMJS_CDNURL: "https://npmmirror.com/mirrors/phantomjs/" # Backup mirror if GitHub releases page fails
         run: ./mvnw -B package -Pprod -DskipTests
 
       # Step 7: Upload the built WAR archive
