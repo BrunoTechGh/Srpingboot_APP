@@ -40,6 +40,7 @@ jobs:
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: "0" # Forces legacy Node v6 to ignore the SSL certificate error during yarn install
           PHANTOMJS_CDNURL: "https://npmmirror.com/mirrors/phantomjs/" # Backup mirror if GitHub releases page fails
+          PATH: ${{ github.workspace }}/node_modules/.bin:${{ env.PATH }} # Exposes local node binaries (like rimraf) to the shell
         run: ./mvnw -B clean verify
 
       # Step 6: Package for Production (Optional but recommended)
@@ -47,6 +48,7 @@ jobs:
         env:
           NODE_TLS_REJECT_UNAUTHORIZED: "0" # Forces legacy Node v6 to ignore the SSL certificate error during yarn install
           PHANTOMJS_CDNURL: "https://npmmirror.com/mirrors/phantomjs/" # Backup mirror if GitHub releases page fails
+          PATH: ${{ github.workspace }}/node_modules/.bin:${{ env.PATH }} # Exposes local node binaries (like rimraf) to the shell
         run: ./mvnw -B package -Pprod -DskipTests
 
       # Step 7: Upload the built WAR archive
