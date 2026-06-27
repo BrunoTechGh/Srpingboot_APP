@@ -22,38 +22,41 @@ jobs:
         with:
           java-version: '8'
           distribution: 'temurin'
-          cache: 'maven' # Automatically caches your ~/.m2 dependencies
+          cache: 'maven'
 
-      # Step 3: Set up Node.js (Speeds up frontend compilation)
+      # Step 3: Set up Node.js on the runner environment directly
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '6.11.0' # Matches your pom.xml property
-          cache: 'yarn' # Automatically caches yarn dependencies based on yarn.lock
+          node-version: '6.11.0'
 
-      # Step 4: Grant execute permission to the Maven wrapper
+      # Step 4: Install global build tools so "rimraf" and "webpack" are always found globally
+      - name: Pre-install global tools
+        run: |
+          npm install -g rimraf webpack@2.5.0
+          echo "$(npm bin -g)" >> $GITHUB_PATH
+
+      # Step 5: Grant execute permission to the Maven wrapper
       - name: Make Maven Wrapper Executable
         run: chmod +x mvnw
 
-      # Step 5: Run the full verification build (Dev Profile)
+      # Step 6: Run full verification build
       - name: Build with Maven (Dev)
         env:
-          NODE_TLS_REJECT_UNAUTHORIZED: "0" # Forces legacy Node v6 to ignore the SSL certificate error during yarn install
-          PHANTOMJS_CDNURL: "https://npmmirror.com/mirrors/phantomjs/" # Backup mirror if GitHub releases page fails
-        run: |
-          export PATH="${{ github.workspace }}/node_modules/.bin:$PATH"
-          ./mvnw -B clean verify
+          NODE_TLS_REJECT_UNAUTHORIZED: "0"
+          PHANTOMJS_CDNURL: "https://npmmirror.com/mirrors/phantomjs/"
+          OPENSSL_CONF: "/dev/null"
+        run: ./mvnw -B clean verify
 
-      # Step 6: Package for Production (Optional but recommended)
+      # Step 7: Package for Production
       - name: Package Production WAR
         env:
-          NODE_TLS_REJECT_UNAUTHORIZED: "0" # Forces legacy Node v6 to ignore the SSL certificate error during yarn install
-          PHANTOMJS_CDNURL: "https://npmmirror.com/mirrors/phantomjs/" # Backup mirror if GitHub releases page fails
-        run: |
-          export PATH="${{ github.workspace }}/node_modules/.bin:$PATH"
-          ./mvnw -B package -Pprod -DskipTests
+          NODE_TLS_REJECT_UNAUTHORIZED: "0"
+          PHANTOMJS_CDNURL: "https://npmmirror.com/mirrors/phantomjs/"
+          OPENSSL_CONF: "/dev/null"
+        run: ./mvnw -B package -Pprod -DskipTests
 
-      # Step 7: Upload the built WAR archive
+      # Step 8: Upload the built WAR archive
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
