@@ -35,15 +35,13 @@ jobs:
       - name: Make Maven Wrapper Executable
         run: chmod +x mvnw
 
-      # Step 5: Run the full verification build (Dev Profile)
-      # This runs Java unit tests and verifies your basic build configuration
+     # Step 5: Run the full verification build (Dev Profile)
       - name: Build with Maven (Dev)
-        run: ./mvnw -ntp clean verify
+        run: ./mvnw -B clean verify
 
       # Step 6: Package for Production (Optional but recommended)
-      # This compiles optimized frontend assets via webpack and builds the final WAR file
       - name: Package Production WAR
-        run: ./mvnw -ntp package -Pprod -DskipTests
+        run: ./mvnw -B package -Pprod -DskipTests
 
       # Step 7: Upload the built WAR archive
       - name: Upload Build Artifact
