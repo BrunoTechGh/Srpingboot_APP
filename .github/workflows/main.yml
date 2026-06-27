@@ -30,10 +30,10 @@ jobs:
         with:
           node-version: '6.11.0'
 
-      # Step 4: Install global build tools so "rimraf" and "webpack" are always found globally
+      # Step 4: Install legacy global build tools compatible with Node v6
       - name: Pre-install global tools
         run: |
-          npm install -g rimraf webpack@2.5.0
+          npm install -g rimraf@2 webpack@2.5.0
           echo "$(npm bin -g)" >> $GITHUB_PATH
 
       # Step 5: Grant execute permission to the Maven wrapper
